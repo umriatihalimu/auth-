@@ -1,0 +1,14 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model kopi_crud {
+  id_kopi     String @unique(map: "id_kopi") @db.VarChar(10)
+  produk_kopi String @db.VarChar(50)
+  harga_kopi  Int
+}
