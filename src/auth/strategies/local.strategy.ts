@@ -9,9 +9,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  validate(username: string, password: string) {
-    const user = this.authService.login({ username, password });
+  async validate(username: string, password: string) {
+    const tokenUser = await this.authService.login({ username, password });
+    console.log('ini didalam local strategi');
 
-    return user;
+    return tokenUser;
   }
 }

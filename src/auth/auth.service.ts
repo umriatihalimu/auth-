@@ -1,31 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
-const users = [
-  {
-    id: 1,
-    username: 'umi',
-    password: 'abc',
-  },
-  {
-    id: 2,
-    username: 'umi2',
-    password: 'abc2',
-  },
-];
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
+  ) {}
 
-  login({ username, password }: { username: string; password: string }) {
-    const findUser = users.find((user) => user.username === username);
+  async getUser() {
+    return await this.prisma.user_kopi.findMany();
+  }
 
-    if (findUser.password === password) {
-      const { password, ...user } = findUser;
-      console.log(password);
+  async createUser(data: { username: string; password: string }) {
+    return await this.prisma.user_kopi.create({
+      data,
+    });
+  }
 
-      return this.jwtService.sign(user);
+  async login(data: { username: string; password: string }) {
+    try {
+      const findUser = await this.prisma.user_kopi.findFirst({
+        where: { username: data.username },
+      });
+      if (findUser.password === data.password) {
+        const { password, ...user } = findUser;
+        // console.log(user);
+        // console.log(password);
+        return this.jwtService.sign(user);
+      }
+    } catch (error) {
+      console.log('username/password yang dimasukkan salah', error);
     }
   }
 }
+
+// constructor(private readonly jwtService: JwtService) {}
+
+// login({ username, password }: { username: string; password: string }) {
+//   const findUser = users.find((user) => user.username === username);
+
+//   if (findUser.password === password) {
+//     const { password, ...user } = findUser;
+//     console.log(password);
+
+//     return this.jwtService.sign(user);
+//   }
+// }

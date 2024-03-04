@@ -12,3 +12,9 @@ model kopi_crud {
   produk_kopi String @db.VarChar(50)
   harga_kopi  Int
 }
+
+model user_kopi {
+  id       Int    @id @default(autoincrement())
+  username String @db.VarChar(50)
+  password String @db.VarChar(50)
+}
