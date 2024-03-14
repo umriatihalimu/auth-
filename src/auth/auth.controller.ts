@@ -1,33 +1,41 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalGuard } from './guard/local.guard';
-import { Request } from 'express';
-import { JwtGuard } from './guard/jwt.guard';
+import { DtoAuth } from './dto/dto.auth';
+import { JwtGuard } from './guards/jwt.guard';
+import { RefreshTokenJwt } from './guards/refresh.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  @Get('login')
-  async getUser() {
-    return this.authService.getUser();
-  }
 
-  @Post('create')
-  async createUser(@Body() data) {
-    return await this.authService.createUser(data);
+  // buat akun
+  @Post('signup')
+  async signUp(@Body() dto: DtoAuth) {
+    return await this.authService.createUser(dto);
   }
 
   @Post('login')
-  @UseGuards(LocalGuard)
-  async login(@Req() req: Request) {
-    return req.user;
+  async login(@Body() dto: DtoAuth) {
+    return await this.authService.login(dto);
   }
 
-  @Get('status')
-  @UseGuards(JwtGuard)
-  status(@Req() req: Request) {
-    console.log('ini didalam controller get status');
+  @UseGuards(RefreshTokenJwt)
+  @Post('refresh')
+  async refreshToken(@Request() req) {
+    return this.authService.refreshToken(req.user);
+  }
 
-    return req.user;
+  @UseGuards(JwtGuard) //middleware untuk endpoint
+  @Get(':id')
+  async getUserById(@Param('id') id: number) {
+    return await this.authService.getUserById(id);
   }
 }

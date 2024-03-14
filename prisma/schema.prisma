@@ -15,6 +15,6 @@ model kopi_crud {
 
 model user_kopi {
   id       Int    @id @default(autoincrement())
-  username String @db.VarChar(50)
-  password String @db.VarChar(50)
+  email    String @unique @db.VarChar(50)
+  password String @db.VarChar(100)
 }
