@@ -1,9 +1,11 @@
 import { IsEmail, IsString } from 'class-validator';
 
-export class DtoAuth {
+export class DtoUser {
   @IsString()
-  @IsEmail()
   username: string;
+
+  @IsEmail()
+  email: string;
 
   @IsString()
   password: string;

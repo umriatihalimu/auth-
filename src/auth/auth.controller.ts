@@ -1,25 +1,23 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DtoAuth } from './dto/dto.auth';
-import { JwtGuard } from './guards/jwt.guard';
+
 import { RefreshTokenJwt } from './guards/refresh.guard';
+
+import { UserService } from 'src/user/user.service';
+import { DtoUser } from 'src/user/dto/dto.user';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   // buat akun
   @Post('signup')
-  async signUp(@Body() dto: DtoAuth) {
-    return await this.authService.createUser(dto);
+  async signUp(@Body() dto: DtoUser) {
+    return await this.userService.createUser(dto);
   }
 
   @Post('login')
@@ -31,11 +29,5 @@ export class AuthController {
   @Post('refresh')
   async refreshToken(@Request() req) {
     return this.authService.refreshToken(req.user);
-  }
-
-  @UseGuards(JwtGuard) //middleware untuk endpoint
-  @Get(':id')
-  async getUserById(@Param('id') id: number) {
-    return await this.authService.getUserById(id);
   }
 }
