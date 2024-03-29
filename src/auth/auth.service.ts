@@ -8,6 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { DtoAuth } from './dto/dto.auth';
 import { UserService } from 'src/user/user.service';
 
+// agar jika sudah login dan sdh expire tokennya maka akan refresh otomatis tokennya
+const EXPIRE_TIME = 20 * 1000; //20 detik
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -47,13 +50,14 @@ export class AuthService {
       user,
       backendToken: {
         accessToken: await this.jwtService.signAsync(payload, {
-          expiresIn: '60s',
+          expiresIn: '20s',
           secret: process.env.jwtSecretKey,
         }),
         refreshToken: await this.jwtService.signAsync(payload, {
           expiresIn: '7d',
           secret: process.env.jwtRefreshTokenKey,
         }),
+        expiresIn: new Date().setTime(new Date().getTime() + EXPIRE_TIME),
       },
     };
   }
@@ -66,13 +70,14 @@ export class AuthService {
     return {
       backendToken: {
         accessToken: await this.jwtService.signAsync(payload, {
-          expiresIn: '60s',
+          expiresIn: '20s',
           secret: process.env.jwtSecretKey,
         }),
         refreshToken: await this.jwtService.signAsync(payload, {
           expiresIn: '7d',
           secret: process.env.jwtRefreshTokenKey,
         }),
+        expiresIn: new Date().setTime(new Date().getTime() + EXPIRE_TIME),
       },
     };
   }
